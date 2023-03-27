@@ -1,0 +1,22 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div style="padding: 15px;">
+    <div style="padding: 10px;">
+        <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+            {% load static %}
+            <img id="userpic_big" src="{% static 'network/cat_twitter.png' %}">
+            {% if request.user.username != username.username %}
+                <button class="btn button_follow" id="follow-user"><a>Follow</a></button>
+            {% endif %}
+        </div>
+        <p style="font-size:2rem;" id="username">{{ username.username }}</p>
+        <p>bio</p>
+        <p>location&nbsp;∙&nbsp;{{ username.email }}&nbsp;∙&nbsp;joined {{ username.date_joined.date }}</p>
+        <p>{% if following %} {% for follow in following %} {{ follow.i_follow_users.all.count }} {% endfor %} {% else %} 0 {% endif %} following&nbsp;∙&nbsp; {% if followers %} {{ followers.all.count }} {% else %} 0 {% endif %} followers</p>
+    </div>
+    {% for post in posts %}
+        {% include "network/post.html" %}
+    {% endfor %}
+</div>
+{% endblock %}

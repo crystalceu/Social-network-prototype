@@ -1,0 +1,37 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div style="padding: 15px;">
+    {% if request.user %}
+    <div class="form-group create-post">
+        <textarea class="form-control" placeholder="Type new post.."></textarea>
+        <input style="display: none" id="username" value="{{ request.user.username }}">
+        <div style="display: flex; justify-content: flex-end;"><button class="btn" id="create-post-btn">Post</button></div>
+    </div>
+    {% endif %}
+    <div style="display: none">
+        <input id="page-number" value="{{ posts.number }}">
+    </div>
+    {% if posts.has_previous %}
+    <div style="display: flex; justify-content: space-around;">
+        {% if request.resolver_match.url_name == 'index_author_page' %}
+            <a href="{% url 'index_author_page' request.user.username posts.number|add:-1 %}">load previous..</a>
+        {% else %}
+            <a href="{% url 'index_page' posts.number|add:-1 %}">load previous..</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% for post in posts %}
+        {% include "network/post.html" %}
+    {% endfor %}
+    {% if posts.has_next %}
+    <div style="display: flex; justify-content: space-around;">
+        {% if request.resolver_match.url_name == 'index_author_page' %}
+            <a href="{% url 'index_author_page' request.user.username posts.number|add:1 %}">load next..</a>
+        {% else %}
+            <a href="{% url 'index_page' posts.number|add:1 %}">load next..</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+.post {
+    width: 100%;
+    border: 1px solid rgba(160, 160, 160, 0.803);
+    border-radius: 10px;
+    background-color: rgb(241, 241, 241);
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+#userpic_small {
+    width: 50px;
+    border-radius: 50%;
+}
+
+#userpic_big {
+    width: 150px;
+    border-radius: 50%;
+}
+
+.button_follow {
+    height: 40px;
+    border: 1px solid rgba(160, 160, 160, 0.803);
+    background-color: rgb(241, 241, 241);
+    border-radius: 20px;
+    font-size: 1.2rem;
+}
+
+#edit_icon {
+    height: 20px;
+    margin-top: -15px;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+.btn:active, .btn:focus, .btn:hover, .btn:focus:after {
+    -webkit-box-shadow: none;
+    text-shadow: none;
+    box-shadow: none;
+}
