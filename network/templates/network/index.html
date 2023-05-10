@@ -12,26 +12,38 @@
     <div style="display: none">
         <input id="page-number" value="{{ posts.number }}">
     </div>
-    {% if posts.has_previous %}
-    <div style="display: flex; justify-content: space-around;">
-        {% if request.resolver_match.url_name == 'index_author_page' %}
-            <a href="{% url 'index_author_page' request.user.username posts.number|add:-1 %}">load previous..</a>
-        {% else %}
-            <a href="{% url 'index_page' posts.number|add:-1 %}">load previous..</a>
-        {% endif %}
-    </div>
-    {% endif %}
+    <div class="infinite-container">
     {% for post in posts %}
         {% include "network/post.html" %}
     {% endfor %}
+    </div>
     {% if posts.has_next %}
     <div style="display: flex; justify-content: space-around;">
         {% if request.resolver_match.url_name == 'index_author_page' %}
-            <a href="{% url 'index_author_page' request.user.username posts.number|add:1 %}">load next..</a>
+            <a class="infinite-more-link" href="{% url 'index_author_page' request.user.username posts.number|add:1 %}">load next..</a>
         {% else %}
-            <a href="{% url 'index_page' posts.number|add:1 %}">load next..</a>
+            <a class="infinite-more-link" href="{% url 'index_page' posts.number|add:1 %}">load next..</a>
         {% endif %}
     </div>
     {% endif %}
 </div>
+
+{% load static %}
+<script src="{% static 'network/js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'network/js/shortcuts/infinite.min.js' %}"></script>
+<script>
+    var infinite = new Waypoint.Infinite({
+        element: $('.infinite-container')[0],
+
+        offset: 'bottom-in-view',
+
+        onBeforePageLoad: function () {
+            $('.loading').show();
+        },
+        onAfterPageLoad: function () {
+            $('.loading').hide();
+        }
+
+    });
+</script>
 {% endblock %}

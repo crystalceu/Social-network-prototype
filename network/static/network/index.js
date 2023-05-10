@@ -22,14 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector("div.create-post") != null) {
         create_post(document.querySelector("div.create-post"));
     }
-    /*if (document.querySelector("button#load-next-page") != null) {
-        load_posts('next');
-    }
-    if (document.querySelector("button#load-previous-page") != null) {
-        load_posts('previous');
-    }*/
     document.querySelectorAll("div#post-options").forEach((post_data) => {
-        console.log('post-options-btn ist hier');
         post_data.querySelector("#post-options-btn").addEventListener('click', (event) => {
             if (post_data.querySelector("#post-options-menu").style.display === 'none') {
                 post_data.querySelector("#post-options-menu").style.display = 'flex';
@@ -42,9 +35,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     });
-    document.querySelector("button#follow-user").addEventListener('click', (event) => {
-        follow_user(document.querySelector("p#username").outerText);
-    })
+
+    if (document.querySelector("button#follow-user")) {
+        document.querySelector("button#follow-user").addEventListener('click', (event) => {
+            follow_user(document.querySelector("p#username").outerText);
+        });
+    }
+
+    if (document.querySelector("input#settings-username")) {
+        document.addEventListener("keyup", function(event) {
+            if (event.code === 'Enter') {
+                if (document.querySelector("input#settings-username").disabled == false) {
+                    document.querySelector("input#settings-username").disabled = true;
+                    console.log(document.querySelector("input#settings-username").value);
+                    change_username(document.querySelector("input#settings-username").value);
+                }
+                else if (document.querySelector("input#settings-email").disabled == false) {
+                    document.querySelector("input#settings-email").disabled = true;
+                    console.log(document.querySelector("input#settings-email").value);
+                    change_email(document.querySelector("input#settings-email").value);
+                }
+            }
+        });
+        document.querySelector("div#settings").addEventListener('click', (event) => {
+            if (event.target == document.querySelector("input#settings-username") && document.querySelector("input#settings-username").disabled) {
+                document.querySelector("input#settings-username").disabled = false;
+                document.querySelector("input#settings-username").focus();    
+            }
+            else if (event.target == document.querySelector("input#settings-email") && document.querySelector("input#settings-email").disabled) {
+                document.querySelector("input#settings-email").disabled = false;
+                document.querySelector("input#settings-email").focus();
+            }
+            else if (event.target != document.querySelector("input#settings-username") && event.target != document.querySelector("input#settings-email")) {
+                if (document.querySelector("input#settings-username").disabled == false) {
+                    document.querySelector("input#settings-username").disabled = true;
+                    console.log(document.querySelector("input#settings-username").value);
+                    change_username(document.querySelector("input#settings-username").value);
+                }
+                else if (document.querySelector("input#settings-email").disabled == false) {
+                    document.querySelector("input#settings-email").disabled = true;
+                    console.log(document.querySelector("input#settings-email").value);
+                    change_email(document.querySelector("input#settings-email").value);
+                }
+            }
+        });
+        document.querySelector("button.change-password-btn").addEventListener('click', (event) => {
+            document.querySelector("tr#cur-pas").hidden = false;
+        })
+        document.querySelector("button.apply-cur-pass").addEventListener('click', (event) => {
+            document.querySelector("tr#cur-pas").hidden = true;
+            document.querySelector("tr#new-pas").hidden = false;
+        });
+        document.querySelector("button.apply-new-pass").addEventListener('click', (event) => {
+            document.querySelector("tr#new-pas").hidden = true;
+            document.querySelector("tr#conf-pas").hidden = false;
+        });
+        document.querySelector("button.confirm-conf-pass").addEventListener('click', (event) => {
+            document.querySelector("tr#conf-pas").hidden = true;
+        });
+    }
 });
 /*
 function load_posts(destination) {
@@ -77,8 +126,6 @@ function load_posts(destination) {
 
 function edit_post(post_data) {
     let element = post_data.querySelector('.edit_post');
-    // console.log(post_data.querySelector('.username').innerHTML);
-    // console.log(post_data.querySelector('#post-content').outerText);
     element.addEventListener('click', (event) => {
         if (post_data.querySelector('#post-content').style.display === 'none') {
             post_data.querySelector('#post-content').style.display = 'block';
@@ -95,7 +142,6 @@ function edit_post(post_data) {
             post_data.querySelector('#post-content').style.display = 'block';
             post_data.querySelector('#post-content-edit').style.display = 'none';
             let csrftoken = getCookie('csrftoken');
-            console.log(csrftoken);
             fetch(`/edit/post/${post_data.querySelector('#id').value}`, {
                 method: "PUT",
                 body: JSON.stringify({
@@ -146,7 +192,6 @@ function create_post(post_data) {
     let element = post_data.querySelector('#create-post-btn');
     element.addEventListener('click', (event) => {
         let csrftoken = getCookie('csrftoken');
-        console.log(csrftoken);
         fetch(`/create_post/${post_data.querySelector('input#username').value}`, {
             method: "PUT",
             body: JSON.stringify({
@@ -171,6 +216,26 @@ function create_post(post_data) {
 }
 
 function update_like_counter(post_data) {
+    post_data.querySelector("#like-button").addEventListener('click', (event) => {
+        let csrftoken = getCookie('csrftoken');
+        fetch(`/like_post/${post_data.querySelector('#id').value}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                post_id: post_data.querySelector('#id').value
+            }),
+            headers: {"X-CSRFToken": csrftoken}
+        })
+        .then(async(response) => {
+            if (response.status === 201) {
+                console.log(`post id: ${post_data.querySelector('#id').value} like button was clicked`);
+            }
+            location.reload(true);
+        })
+        .catch(error => {
+            alert(error);
+            location.reload();
+        })
+    })
     return true;
 }
 
@@ -192,4 +257,46 @@ function follow_user(username) {
         alert(error);
         location.reload();
     })
+}
+
+function change_username(username) {
+    let csrftoken = getCookie('csrftoken');
+        fetch(`/settings/username`, {
+            method: "PUT",
+            body: JSON.stringify({
+                username: username
+            }),
+            headers: {"X-CSRFToken": csrftoken}
+        })
+        .then(async(response) => {
+            if (response.status === 201) {
+                console.log(`new username: ${username} was editted`);
+            }
+            location.reload();
+        })
+        .catch(error => {
+            alert(error);
+            location.reload();
+        })
+}
+
+function change_email(email) {
+    let csrftoken = getCookie('csrftoken');
+        fetch(`/settings/email`, {
+            method: "PUT",
+            body: JSON.stringify({
+                email: email
+            }),
+            headers: {"X-CSRFToken": csrftoken}
+        })
+        .then(async(response) => {
+            if (response.status === 201) {
+                console.log(`new email: ${email} was editted`);
+            }
+            location.reload();
+        })
+        .catch(error => {
+            alert(error);
+            location.reload();
+        })
 }

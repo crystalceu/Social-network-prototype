@@ -1,4 +1,4 @@
-import json
+import json, time
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,10 +16,11 @@ def index(request, following='None', page_number=1):
         row = Posts.objects.all().order_by('-date')
     else:
         row = Posts.objects.filter(username_posts__in=UserInfo.objects.get(username_userinfo=request.user).i_follow_users.all()).order_by('-date')
-    p = Paginator(row, 2)
+    row = add_posts_info(request, row)
+    p = Paginator(row, 3)
     row = p.get_page(page_number)
+    time.sleep(1)
     return render(request, "network/index.html", {
-        "all_posts": p,
         "posts": row
     })
 
@@ -72,14 +73,18 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def account(request, username=None):
-    if username == None:
-        username = request.user.username
+def account(request, username=None, page_number=1):
+    row = Posts.objects.filter(username_posts=User.objects.get(username=username)).order_by('-date')
+    
+    user = User.objects.get(username=username)
+    p = Paginator(add_posts_info(request, row), 3)
+    row = p.get_page(page_number)
+    time.sleep(1)
     return render(request, "network/account.html", {
-        "username": User.objects.get(username=username),
+        "username": user,
         "following": UserInfo.objects.filter(username_userinfo=User.objects.get(username=username)),
         "followers": UserInfo.objects.filter(i_follow_users__exact=User.objects.get(username=username)),
-        "posts": reversed(Posts.objects.filter(username_posts=User.objects.get(username=username)))
+        "posts": row
     })
 
 @login_required(login_url="network:login")
@@ -119,4 +124,40 @@ def index_following(request):
 def delete_post(request, post_id):
     obj = Posts.objects.get(id=post_id)
     obj.delete()
+    return HttpResponse(status=201)
+
+@login_required(login_url="network:login")
+def settings(request, action=None):
+    if (action == 'username'):
+        body = json.loads(request.body)
+        user_info = User.objects.get(id=request.user.id)
+        user_info.username = body.get('username')
+        user_info.save()
+        return HttpResponse(status=201)
+    elif (action == 'email'):
+        body = json.loads(request.body)
+        user_info = User.objects.get(id=request.user.id)
+        user_info.email = body.get('email')
+        user_info.save()
+        return HttpResponse(status=201)
+    return render(request, "network/settings.html")
+
+def get_slice_of_posts(request, end, start=0):
+    return Posts.objects.all().order_by('-date')[start:end]
+
+def add_posts_info(request, row):
+    for post in row:
+        if (request.user in list(post.likes.all())):
+            post.bool_field = True
+        else:
+            post.bool_field = False
+    return row
+
+@login_required(login_url="network:login")
+def like_post(request, post_id):
+    obj = Posts.objects.get(id=post_id)
+    if (request.user in list(obj.likes.all())):
+        obj.likes.remove(request.user)
+    else:
+        obj.likes.add(request.user)
     return HttpResponse(status=201)
