@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (document.querySelector("input#settings-username")) {
+        document.querySelector("input#settings-image").addEventListener('change', (event) => {
+            console.log('change button was clicked');
+            image = document.querySelector("input#settings-image").files[0];
+            change_userpic(image);
+        });
         document.addEventListener("keyup", function(event) {
             if (event.code === 'Enter') {
                 if (document.querySelector("input#settings-username").disabled == false) {
@@ -83,15 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector("tr#cur-pas").hidden = false;
         })
         document.querySelector("button.apply-cur-pass").addEventListener('click', (event) => {
-            document.querySelector("tr#cur-pas").hidden = true;
-            document.querySelector("tr#new-pas").hidden = false;
-        });
-        document.querySelector("button.apply-new-pass").addEventListener('click', (event) => {
-            document.querySelector("tr#new-pas").hidden = true;
-            document.querySelector("tr#conf-pas").hidden = false;
+            change_password_cur_pass(document.querySelector("input#input-cur-pass").value);
+            //document.querySelector("tr#cur-pas").hidden = true;
+            //document.querySelector("tr#new-pas").hidden = false;
         });
         document.querySelector("button.confirm-conf-pass").addEventListener('click', (event) => {
-            document.querySelector("tr#conf-pas").hidden = true;
+            change_password_new_pass(document.querySelector("input#input-new-pass").value, document.querySelector("input#input-conf-pass").value);
+            //document.querySelector("tr#new-pas").hidden = true;
+            //document.querySelector("tr#conf-pas").hidden = false;
         });
     }
 });
@@ -261,42 +265,120 @@ function follow_user(username) {
 
 function change_username(username) {
     let csrftoken = getCookie('csrftoken');
-        fetch(`/settings/username`, {
-            method: "PUT",
-            body: JSON.stringify({
-                username: username
-            }),
-            headers: {"X-CSRFToken": csrftoken}
-        })
-        .then(async(response) => {
-            if (response.status === 201) {
-                console.log(`new username: ${username} was editted`);
-            }
-            location.reload();
-        })
-        .catch(error => {
-            alert(error);
-            location.reload();
-        })
+    fetch(`/settings/username`, {    
+        method: "PUT",
+        body: JSON.stringify({
+            username: username
+        }),
+        headers: {"X-CSRFToken": csrftoken}
+    })
+    .then(async(response) => {
+        if (response.status === 201) {
+            console.log(`new username: ${username} was editted`);
+        }
+        location.reload();
+    })
+    .catch(error => {
+        alert(error);
+        location.reload();
+    })
 }
 
 function change_email(email) {
     let csrftoken = getCookie('csrftoken');
-        fetch(`/settings/email`, {
-            method: "PUT",
-            body: JSON.stringify({
-                email: email
-            }),
-            headers: {"X-CSRFToken": csrftoken}
-        })
-        .then(async(response) => {
-            if (response.status === 201) {
-                console.log(`new email: ${email} was editted`);
-            }
-            location.reload();
-        })
-        .catch(error => {
-            alert(error);
-            location.reload();
-        })
+    fetch(`/settings/email`, {
+        method: "PUT",
+        body: JSON.stringify({
+            email: email
+        }),
+        headers: {"X-CSRFToken": csrftoken}
+    })
+    .then(async(response) => {
+        if (response.status === 201) {
+            console.log(`new email: ${email} was editted`);
+        }
+        location.reload();
+    })
+    .catch(error => {
+        alert(error);
+        location.reload();
+    })
+}
+
+function change_userpic(image) {
+    let csrftoken = getCookie('csrftoken');
+    let form = new FormData();
+    form.append('file', image, 'user-file.jpg');
+    form.append('X-CSRFToken', JSON.stringify(csrftoken));
+    
+    fetch(`/settings/image`, {
+        method: "POST",
+        body: form,
+        headers: {"X-CSRFToken": csrftoken}
+    })
+    .then(async(response) => {
+        if (response.status === 201) {
+            console.log(`new image: ${image} was editted`);
+        }
+        location.reload();
+    })
+    .catch(error => {
+        alert(error);
+        location.reload();
+    })
+}
+
+function change_password_cur_pass(password) {
+    let csrftoken = getCookie('csrftoken');
+    fetch(`/settings/password`, {
+        method: "POST",
+        body: JSON.stringify({ 
+            password_type: 'cur_pass',
+            password: password
+        }),
+        headers: {"X-CSRFToken": csrftoken}
+    })
+    .then(async(response) => {
+        if (response.status === 201) {
+            console.log(`current password ist correct`);
+            document.querySelector("tr#cur-pas").hidden = true;
+            document.querySelector("tr#new-pas").hidden = false;
+            document.querySelector("tr#conf-pas").hidden = false;
+        }
+        else if (response.status === 403) {
+            console.log(`current password isn't correct`);
+            document.querySelector("input#input-cur-pass").value = '';
+        }
+    })
+    .catch(error => {
+        alert(error);
+    })
+}
+
+function change_password_new_pass(new_password, conf_password) {
+    let csrftoken = getCookie('csrftoken');
+    fetch(`/settings/password`, {
+        method: "POST",
+        body: JSON.stringify({
+            password_type: 'new_pass',
+            new_password: new_password,
+            conf_password: conf_password
+        }),
+        headers: {"X-CSRFToken": csrftoken}
+    })
+    .then(async(response) => {
+        if (response.status === 201) {
+            console.log(`new password was entered`);
+            document.querySelector("tr#new-pas").hidden = true;
+            document.querySelector("tr#conf-pas").hidden = true;
+        }
+        else if (response.status === 403) {
+            console.log(`passwords don't match`);
+            document.querySelector("input#input-new-pass").value = '';
+            document.querySelector("input#input-conf-pass").value= '';
+        }
+    })
+    .catch(error => {
+        alert(error);
+    })
 }

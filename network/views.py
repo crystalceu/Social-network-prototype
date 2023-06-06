@@ -1,7 +1,9 @@
 import json, time
+import os
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -75,7 +77,7 @@ def register(request):
 
 def account(request, username=None, page_number=1):
     row = Posts.objects.filter(username_posts=User.objects.get(username=username)).order_by('-date')
-    
+
     user = User.objects.get(username=username)
     p = Paginator(add_posts_info(request, row), 3)
     row = p.get_page(page_number)
@@ -140,6 +142,30 @@ def settings(request, action=None):
         user_info.email = body.get('email')
         user_info.save()
         return HttpResponse(status=201)
+    elif (action == 'image'):
+        user_info = User.objects.get(id=request.user.id)
+        print(request.FILES)
+        print(request.FILES['file'])
+        user_info.image.delete()
+        user_info.image = request.FILES['file']
+        user_info.save()
+        return HttpResponse(status=201)
+    elif (action == 'password'):
+        body = json.loads(request.body)
+        if (body.get('password_type') == 'cur_pass'):
+            if not request.user.check_password(body.get('password')):
+                print('incorrect current password')
+                return HttpResponse(status=403)
+            else:
+                print('correct password')
+                return HttpResponse(status=201)
+        elif (body.get('password_type') == 'new_pass'):
+            if (body.get('new_password') == body.get('conf_password')):
+                print('passwords are the same')
+                return HttpResponse(status=201)
+            else:
+                print('passwords are different')
+                return HttpResponse(status=403)
     return render(request, "network/settings.html")
 
 def get_slice_of_posts(request, end, start=0):

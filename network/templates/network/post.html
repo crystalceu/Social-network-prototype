@@ -2,7 +2,7 @@
     <div style="display: flex; flex-direction: row; gap: 15px; padding: 5px; width: 100%;">
         <div>
             {% load static %}
-            <img id="userpic_small" src="{% static 'network/cat_twitter.png' %}">
+            <img id="userpic_small" src="{{ post.username_posts.image.url }}">
         </div>
         <div style="width: 80%;">
             <a class="username" href="{% url 'account' post.username_posts.username %}">{{ post.username_posts }}</a><a class="text-muted">&nbsp;∙&nbsp;{{ post.date }}</a>

@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 class User(AbstractUser):
+    image = models.ImageField(upload_to ='network/', default='media/network/cat_twitter.png')
     pass
 
 class UserInfo(models.Model):

@@ -1,5 +1,6 @@
-
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -19,4 +20,4 @@ urlpatterns = [
     path("delete_post/<int:post_id>", views.delete_post, name="delete_post"),
     path("like_post/<int:post_id>", views.like_post, name="like_post"),
     path("follow_user/<str:username>", views.follow_user, name="follow_user")
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

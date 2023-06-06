@@ -5,8 +5,9 @@
     <table>
         <tr>
             {% load static %}
-            <td><img style="border-radius: 100%; height: 90px;" src="{% static 'network/cat_twitter.png' %}"></td>
-            <th><input type="file" accept="image/*"></th>
+            <td><img id="userpic" style="border-radius: 100%; height: 90px;" src="{{ request.user.image.url }}"></td>
+            <th><input id="settings-image" type="file" accept="image/*"></th>
+            <th><output></output></th>
         </tr>
     </table>
     <table>
@@ -25,17 +26,16 @@
     <table>
         <tr hidden id="cur-pas">
             <td>current password</td>
-            <th><input></th>
+            <th><input id="input-cur-pass"></th>
             <th><button class="btn btn-secondary apply-cur-pass" style="height: 30px;"><a>Apply</a></button></th>
         </tr>
         <tr hidden id="new-pas">
             <td>password</td>
-            <th><input></th>
-            <th><button class="btn btn-secondary apply-new-pass" style="height: 30px;"><a>Apply</a></button></th>
+            <th><input id="input-new-pass"></th>
         </tr>
         <tr hidden id="conf-pas">
             <td>confirm password</td>
-            <th><input></th>
+            <th><input id="input-conf-pass"></th>
             <th><button class="btn btn-secondary confirm-conf-pass" style="height: 30px;"><a>Confirm</a></button></th>
         </tr>
     </table>

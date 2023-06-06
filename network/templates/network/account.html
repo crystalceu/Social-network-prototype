@@ -5,7 +5,7 @@
     <div id="account" style="padding: 10px;">
         <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
             {% load static %}
-            <img id="userpic_big" src="{% static 'network/cat_twitter.png' %}">
+            <img id="userpic_big" src="{{ username.image.url }}">
             {% if request.user.username != username.username %}
                 <button class="btn button_follow" id="follow-user"><a>Follow</a></button>
             {% else %}
