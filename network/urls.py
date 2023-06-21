@@ -13,11 +13,12 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("settings", views.settings, name="settings"),
     path("settings/<str:action>", views.settings, name="settings_action"),
-    path("<str:username>", views.account, name="account"),
-    path("<str:username>/<int:page_number>", views.account, name="account_page"),
     path("edit/post/<int:post_id>", views.edit_post, name="edit_post"),
     path("create_post/<str:username>", views.create_post, name="create_post"),
     path("delete_post/<int:post_id>", views.delete_post, name="delete_post"),
     path("like_post/<int:post_id>", views.like_post, name="like_post"),
-    path("follow_user/<str:username>", views.follow_user, name="follow_user")
+    path("follow_user/<str:username>", views.follow_user, name="follow_user"),
+    path("unfollow_user/<str:username>", views.unfollow_user, name="unfollow_user"),
+    path("account/<str:username>/<int:page_number>", views.account, name="account_page"),
+    path("account/<str:username>", views.account, name="account")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

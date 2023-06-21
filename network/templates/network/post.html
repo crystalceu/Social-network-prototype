@@ -1,24 +1,27 @@
-<div class="post infinite-item" style="width: 100%;">
+<div class="post infinite-item" id="post-{{ post.id }}" style="width: 100%;">
     <div style="display: flex; flex-direction: row; gap: 15px; padding: 5px; width: 100%;">
         <div>
             {% load static %}
-            <img id="userpic_small" src="{{ post.username_posts.image.url }}">
+            <div id="userpic_small">
+                <a href="{% url 'account' post.username_posts.username %}"><img id="userpic_small" src="{{ post.username_posts.image.url }}"></a>
+                <input class="user_id" hidden="true" value="{{ post.username_posts.id }}">
+            </div>
         </div>
         <div style="width: 80%;">
-            <a class="username" href="{% url 'account' post.username_posts.username %}">{{ post.username_posts }}</a><a class="text-muted">&nbsp;∙&nbsp;{{ post.date }}</a>
+            <a class="username" href="{% url 'account' post.username_posts.username|stringformat:'s' %}">{{ post.username_posts }}</a><a class="text-muted">&nbsp;∙&nbsp;{{ post.date }}</a>
             <br>
             <div style="display: block;" id="post-content">
                 <a>{{ post.content }}</a>
             </div>
-            <input style="display: none;" id="id" value="{{ post.id }}">
+            <input style="display: none;" class="id" value="{{ post.id }}">
             {% if request.user.username == post.username_posts.username %}
             <div style="display: none;" id="post-content-edit">
-                <input class="form-control" style="width: 100%;" value="{{ post.content }}">
-                <div style="display: flex; justify-content: flex-end;"><button class="btn" id="save-editted">Save</button></div>
+                <input class="form-control" id="editted-post-{{ post.id }}" style="width: 100%;" value="{{ post.content }}">
+                <div style="display: flex; justify-content: flex-end;"><button class="btn" id="save-editted" onclick="edit_post('{{ post.id }}')">Save</button></div>
             </div>
             {% endif %}
             <div style="display: flex; align-items: center;">
-                <a class="text-muted">{{ post.likes.all.count }} <button class="btn" id="like-button"><img {% if post.bool_field %} src="{% static 'network/like-clicked-light.png' %}" {% else %} src="{% static 'network/like-empty-light.png' %}" {% endif %} height="30"></button></a>
+                <a><a id="like-counter" class="text-muted">{{ post.likes.all.count }}</a> <button class="btn" {% if request.user.is_authenticated %} onclick="update_like_counter('{{ post.id }}')" {% else %} disable {% endif %} id="like-button"><img {% if post.bool_field %} src="{% static 'network/like-clicked-light.png' %}" {% else %} src="{% static 'network/like-empty-light.png' %}" {% endif %} height="30"></button></a>
             </div>
         </div>
         {% if request.user.username == post.username_posts.username %}
@@ -26,12 +29,12 @@
             {% load static %}
             <button class="btn"><img id="edit_icon" src="{% static 'network/icon-edit.png' %}"></button>
         </div>!-->
-        <div style="margin-left: auto;" id="post-options">
+        <div style="margin-left: auto; margin-top: -10px;" id="post-options">
             <div style="display: flex; flex-direction: row-reverse;">
-                <div style="margin-bottom: auto;"><button class="btn" style="height: 10px;" id="post-options-btn" type="button"><a>⋯</a></button></div>
-                <div id="post-options-menu" style="display: none;">
-                    <a class="edit_post">Edit</a>
-                    <a class="delete_post">Delete</a>
+                <div><button class="btn post-options-btn" style="height: 10px;" class="post-options" id="options-btn-{{ post.id }}" onclick="show_options('{{ post.id }}')" type="button"><img src="{% static 'network/kebab_menu.svg' %}"></button></div>
+                <div id="options-menu" style="padding-top: 10px; display: none;">
+                    <a class="edit_post" onclick="show_edit_post('{{ post.id }}')">Edit</a>
+                    <a class="delete_post" onclick="delete_post('{{ post.id }}')">Delete</a>
                 </div>
             </div>
         </div>

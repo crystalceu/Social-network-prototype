@@ -77,15 +77,21 @@ def register(request):
 
 def account(request, username=None, page_number=1):
     row = Posts.objects.filter(username_posts=User.objects.get(username=username)).order_by('-date')
-
     user = User.objects.get(username=username)
+    followers = UserInfo.objects.filter(i_follow_users__exact=User.objects.filter(username=username)[0])
+    follower_status = False
+    for follower in followers:
+        if follower.id == request.user.id:
+            follower_status = True
+            break
     p = Paginator(add_posts_info(request, row), 3)
     row = p.get_page(page_number)
     time.sleep(1)
     return render(request, "network/account.html", {
         "username": user,
-        "following": UserInfo.objects.filter(username_userinfo=User.objects.get(username=username)),
-        "followers": UserInfo.objects.filter(i_follow_users__exact=User.objects.get(username=username)),
+        "following": UserInfo.objects.filter(username_userinfo=User.objects.filter(username=username)[0]),
+        "followers": followers,
+        "follower_status": follower_status,
         "posts": row
     })
 
@@ -100,7 +106,6 @@ def create_post(request, username):
 @login_required(login_url="network:login")
 def edit_post(request, post_id):
     body = json.loads(request.body)
-    print(body.get('post_new_version'))
     post = Posts.objects.get(id=post_id)
     post.content = body.get('post_new_version')
     post.save()
@@ -115,6 +120,12 @@ def follow_user(request, username):
         row = UserInfo.objects.create(**newObject)
         row.save()
     row.i_follow_users.add(User.objects.get(username=username))
+    return HttpResponse(status=201)
+
+@login_required(login_url="network:login")
+def unfollow_user(request, username):
+    row = UserInfo.objects.get(username_userinfo=User.objects.get(id=request.user.id))
+    row.i_follow_users.remove(User.objects.get(username=username))
     return HttpResponse(status=201)
 
 @login_required(login_url="network:login")
@@ -144,8 +155,6 @@ def settings(request, action=None):
         return HttpResponse(status=201)
     elif (action == 'image'):
         user_info = User.objects.get(id=request.user.id)
-        print(request.FILES)
-        print(request.FILES['file'])
         user_info.image.delete()
         user_info.image = request.FILES['file']
         user_info.save()
@@ -182,7 +191,7 @@ def add_posts_info(request, row):
 @login_required(login_url="network:login")
 def like_post(request, post_id):
     obj = Posts.objects.get(id=post_id)
-    if (request.user in list(obj.likes.all())):
+    if (User.objects.get(id=request.user.id) in list(obj.likes.all())):
         obj.likes.remove(request.user)
     else:
         obj.likes.add(request.user)

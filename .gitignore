@@ -164,3 +164,6 @@ node_modules/waypoints/test/waypoint-spec.js
 node_modules/waypoints/testem.json
 package-lock.json
 package.json
+node_modules/.DS_Store
+node_modules/waypoints/.DS_Store
+node_modules/waypoints/test/.DS_Store

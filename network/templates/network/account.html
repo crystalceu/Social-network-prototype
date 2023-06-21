@@ -6,8 +6,8 @@
         <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
             {% load static %}
             <img id="userpic_big" src="{{ username.image.url }}">
-            {% if request.user.username != username.username %}
-                <button class="btn button_follow" id="follow-user"><a>Follow</a></button>
+            {% if request.user.id != username.id %}   
+                <button class="btn button_follow" id="follow-user">{% if follower_status %}<a id="follower-status">Unfollow</a>{% else %}<a id="follower-status">Follow</a>{% endif %}</button>
             {% else %}
             <div style="margin-bottom: auto;">
                 <a href="{% url 'settings' %}"><button class="btn"><img src="{% static 'network/settings-icon.png' %}" height="32"></button></a>
@@ -17,7 +17,7 @@
         <p style="font-size:2rem;" id="username">{{ username.username }}</p>
         <p>bio</p>
         <p>location&nbsp;∙&nbsp;{{ username.email }}&nbsp;∙&nbsp;joined {{ username.date_joined.date }}</p>
-        <p>{% if following %} {% for follow in following %} {{ follow.i_follow_users.all.count }} {% endfor %} {% else %} 0 {% endif %} following&nbsp;∙&nbsp; {% if followers %} {{ followers.all.count }} {% else %} 0 {% endif %} followers</p>
+        <p><a>{% if following %} {{ following.all.count }} {% else %} 0 {% endif %}</a> following&nbsp;∙&nbsp; <a id="followers-counter">{% if followers %} {{ followers.all.count }} {% else %} 0 {% endif %}</a> followers</p>
     </div>
     <div class="infinite-container">
     {% for post in posts %}
