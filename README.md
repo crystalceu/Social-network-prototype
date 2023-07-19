@@ -11,7 +11,10 @@
 <a name="desc"></a>
 ## Description
 
-sometext
+The proposed pet project is a Twitter-like platform. Users can log in using existing accounts, log out, or create new ones. Once logged in, they have the ability to create, edit and delete their own posts, as well as leave a like. The platform also includes a feature to follow and unfollow other users, allowing users to customize their feed.
+
+In addition to these features, users can personalize their profiles by changing their profile picture, password, username, email, bio, and location. The platform consists of three main pages: "All Posts" for a comprehensive view of all users' content, "Following" for a feed of preferred content from followed users, and "Authorized User Page" to view the user's posts, account information, and access account settings. These functionalities aim to deliver an engaging and customizable experience, akin to Twitter.
+
 
 <a name="allposts"></a>
 ## All Posts
@@ -21,14 +24,12 @@ The page displays a comprehensive collection of posts contributed by all users. 
 ![screencapture-social1network1prototype-pythonanywhere-2023-06-28-22_01_43](https://github.com/crystalceu/social-network-prototype/assets/74397218/dad0e5d8-de57-4f01-be75-2386d74e56fc)
 
 
-
 <a name="following"></a>
 ## Following
 
 The "Following" page displays all the posts belonging to the users that the authorized user is currently following.
 
 ![screencapture-social1network1prototype-pythonanywhere-2023-06-27-22_18_40](https://github.com/crystalceu/social-network-prototype/assets/74397218/67ea7a1e-a38a-4259-9718-29c6532e71dc)
-
 
 
 <a name="account"></a>
