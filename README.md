@@ -35,11 +35,12 @@ The "Following" page displays all the posts belonging to the users that the auth
 <a name="account"></a>
 ## Account
 
-sometext
+The personal page is the user's profile where they can showcase their tweets, bio, profile picture, and other account details.
+If the page belongs to an authorized user, then it will be able to click the settings button and modify account information.
 
 ![screencapture-social1network1prototype-pythonanywhere-account-crystalceu-2023-06-27-22_36_18](https://github.com/crystalceu/social-network-prototype/assets/74397218/612fba48-6acf-45dc-9916-768e1f41ae6f)
 
-sometext
+Otherwise, if the user is authorized but the page doesn't belong to him, the page will contain the “follow” button to make it possible to stay updated with the account's posts and activities.
 
 ![screencapture-social1network1prototype-pythonanywhere-account-punctualhedgehog-2023-06-27-22_39_00](https://github.com/crystalceu/social-network-prototype/assets/74397218/ca499652-811a-4a41-b62d-0d7cdf2af250)
 
